@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Cash Book (Google Sheets)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f6f8; padding:20px; }
+    h1 { text-align:center; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    th, td { border:1px solid #ccc; padding:8px; text-align:center; }
+    th { background:#2c3e50; color:white; }
+    input { width:100%; padding:6px; margin:4px 0; box-sizing:border-box; }
+    button { padding:10px 15px; margin-top:10px; background:#2c3e50; color:white; border:none; cursor:pointer; }
+    button:hover { background:#1a252f; }
+    .form-grid { display:grid; grid-template-columns: repeat(6, 1fr); gap:10px; }
+  </style>
+</head>
+<body>
+
+<h1>Company Cash Book</h1>
+<p style="text-align:center;color:#555">Entries are saved directly to Google Sheets</p>
+
+<table id="cashTable">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Voucher No</th>
+      <th>Cheque No</th>
+      <th>Description</th>
+      <th>Cash In</th>
+      <th>Cash Out</th>
+      <th>Balance</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h3>Add Daily Entry</h3>
+<div class="form-grid">
+  <input type="date" id="dateInput" />
+  <input type="text" id="voucherInput" placeholder="Voucher No" />
+  <input type="text" id="chequeInput" placeholder="Cheque No" />
+  <input type="text" id="descInput" placeholder="Description" />
+  <input type="number" id="cashInInput" placeholder="Cash In" />
+  <input type="number" id="cashOutInput" placeholder="Cash Out" />
+</div>
+
+<button onclick="addEntry()">Add Entry</button>
+
+<script>
+// 🔴 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwpLzFuDpopV-6aaX_1er7YB-QbzV-zJ0-VGtqQwAqzi8xCuW3fepCCdjmiFyE1kGwZ/exec';
+
+let entries = [];
+
+function renderTable() {
+  const tbody = document.querySelector('#cashTable tbody');
+  tbody.innerHTML = '';
+  let balance = 0;
+
+  entries.forEach(e => {
+    balance = balance + Number(e.cashIn) - Number(e.cashOut);
+    const row = tbody.insertRow();
+    row.insertCell(0).innerText = e.date;
+    row.insertCell(1).innerText = e.voucher;
+    row.insertCell(2).innerText = e.cheque;
+    row.insertCell(3).innerText = e.desc;
+    row.insertCell(4).innerText = e.cashIn;
+    row.insertCell(5).innerText = e.cashOut;
+    row.insertCell(6).innerText = balance;
+  });
+}
+
+function addEntry() {
+  const date = document.getElementById('dateInput').value;
+  if (!date) {
+    alert('Please select a date');
+    return;
+  }
+
+  const entry = {
+    date: date,
+    voucher: document.getElementById('voucherInput').value,
+    cheque: document.getElementById('chequeInput').value,
+    desc: document.getElementById('descInput').value,
+    cashIn: document.getElementById('cashInInput').value || 0,
+    cashOut: document.getElementById('cashOutInput').value || 0
+  };
+
+  fetch(GOOGLE_SHEET_URL, {
+    method: 'POST',
+    body: JSON.stringify(entry),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(res => res.text())
+  .then(() => {
+    entries.push(entry);
+    renderTable();
+    document.querySelectorAll('.form-grid input').forEach(i => i.value = '');
+  })
+  .catch(() => alert('Error saving to Google Sheet'));
+}
+</script>
+
+</body>
+</html>
