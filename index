@@ -50,7 +50,7 @@
 
 <script>
 // 🔴 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwpLzFuDpopV-6aaX_1er7YB-QbzV-zJ0-VGtqQwAqzi8xCuW3fepCCdjmiFyE1kGwZ/exec';
+const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/17zvKKV_N6fZcu9e7zGlV4Xsu7AtoQDTenYthMzqIMIc/edit?gid=0#gid=0';
 
 let entries = [];
 
